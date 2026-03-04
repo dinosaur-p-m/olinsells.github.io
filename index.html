@@ -170,7 +170,7 @@
             color: var(--text-dim);
             display: flex;
             flex-direction: column;
-            gap: 0.35rem;
+            gap: 0.15rem;
         }
 
         .card-meta-top {
@@ -305,15 +305,20 @@
         .detail-contact {
             margin-top: 0.75rem;
             display: flex;
-            align-items: center;
+            align-items: baseline;
             gap: 0.5rem;
             flex-wrap: wrap;
+        }
+
+        .detail-contact .meta-link {
+            padding: 0.25rem 0.6rem;
         }
 
         .detail-email {
             font-size: 0.8rem;
             color: var(--text-dim);
             word-break: break-all;
+            line-height: 1.4;
         }
 
         .detail-close {
@@ -393,7 +398,9 @@
       <p id="detail-description" class="detail-description"></p>
       <div class="detail-contact">
         <a id="detail-inquire" class="meta-link" href="#">Inquire</a>
-        <span id="detail-email" class="detail-email"></span>
+        <span id="detail-or-email" class="detail-email">
+          or email <span id="detail-email"></span>
+        </span>
       </div>
       <p id="detail-date" class="detail-meta-row"></p>
     </div>
@@ -554,8 +561,11 @@
                 <div class="seller-name">${sellerName}</div>
                 <div class="posted-date">${formattedDate}</div>
               </div>
-              <div>
+              <div class="detail-contact">
                 <a class="meta-link" href="mailto:${sellerEmail}?subject=${encodeURIComponent('Olin Sells: Interested in buying ' + productName)}">Inquire</a>
+                <span class="detail-email">
+                  or email <span>${sellerEmail}</span>
+                </span>
               </div>
             </div>
           </div>
