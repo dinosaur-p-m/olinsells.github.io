@@ -14,7 +14,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: "Helvetica", "Helvetica Neue", Arial, sans-serif;
             background-color: var(--dark-blue);
             color: var(--text-main);
             margin: 0;
@@ -165,8 +165,7 @@
 
         .card-meta {
             margin-top: 0.5rem;
-            padding-top: 0.75rem;
-            border-top: 1px solid rgba(136, 146, 176, 0.4);
+            padding-top: 0.25rem;
             font-size: 0.85rem;
             color: var(--text-dim);
             display: flex;
@@ -174,23 +173,43 @@
             gap: 0.35rem;
         }
 
+        .card-meta-top {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
         .seller-name {
             font-weight: 700;
             color: var(--text-main);
+            padding: 0.3rem 0 0.4rem;
         }
 
         .posted-date {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: rgba(136, 146, 176, 0.95);
+            font-weight: 400;
+            text-align: right;
         }
 
         .meta-link {
-            color: var(--accent-blue);
+            display: inline-block;
+            padding: 0.45rem 0.9rem;
+            border-radius: 999px;
+            border: none;
+            background-color: var(--accent-blue);
+            color: #001018;
             text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
         }
 
         .meta-link:hover {
-            text-decoration: underline;
+            filter: brightness(1.05);
+            transform: translateY(-1px);
         }
 
         .contact-btn {
@@ -209,6 +228,118 @@
 
         .contact-btn:hover {
             background-color: rgba(100, 255, 218, 0.1);
+        }
+
+        /* Detail modal */
+        .detail-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 12, 27, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+        }
+
+        .detail-backdrop.is-open {
+            display: flex;
+        }
+
+        .detail-modal {
+            background: var(--light-blue);
+            border-radius: 16px;
+            max-width: 900px;
+            width: min(90vw, 900px);
+            max-height: 90vh;
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
+            overflow: hidden;
+            border: 1px solid rgba(100, 255, 218, 0.35);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+            align-items: stretch;
+        }
+
+        .detail-image-wrap {
+            background: #000;
+            aspect-ratio: 3 / 4;
+        }
+
+        .detail-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .detail-content {
+            padding: 1.5rem 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .detail-title {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .detail-price {
+            margin: 0;
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .detail-description {
+            margin-top: 0.5rem;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .detail-meta-row {
+            font-size: 0.85rem;
+            color: rgba(136, 146, 176, 0.95);
+        }
+
+        .detail-contact {
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .detail-email {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            word-break: break-all;
+        }
+
+        .detail-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+
+        .detail-close:hover {
+            color: var(--accent-blue);
+        }
+
+        @media (max-width: 768px) {
+            .detail-modal {
+                grid-template-columns: minmax(0, 1fr);
+                max-width: 95vw;
+            }
+
+            .detail-content {
+                padding: 1.25rem 1.25rem 1.5rem;
+            }
         }
 
         #loading { 
@@ -250,6 +381,25 @@
     <div id="loading">Searching for items...</div>
 </div>
 
+<div class="detail-backdrop" id="detail-backdrop" aria-hidden="true">
+  <div class="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+    <div class="detail-image-wrap">
+      <img id="detail-image" class="detail-image" alt="">
+    </div>
+    <div class="detail-content">
+      <button class="detail-close" type="button" aria-label="Close detail view">&times;</button>
+      <h2 id="detail-title" class="detail-title"></h2>
+      <p id="detail-price" class="detail-price"></p>
+      <p id="detail-description" class="detail-description"></p>
+      <div class="detail-contact">
+        <a id="detail-inquire" class="meta-link" href="#">Inquire</a>
+        <span id="detail-email" class="detail-email"></span>
+      </div>
+      <p id="detail-date" class="detail-meta-row"></p>
+    </div>
+  </div>
+</div>
+
 <script>
   function formatPrice(rawPrice) {
     if (rawPrice == null) return '';
@@ -280,6 +430,69 @@
     return t;
   }
 
+  function setupDetailModal() {
+    const backdrop = document.getElementById('detail-backdrop');
+    const imgEl = document.getElementById('detail-image');
+    const titleEl = document.getElementById('detail-title');
+    const priceEl = document.getElementById('detail-price');
+    const descEl = document.getElementById('detail-description');
+    const dateEl = document.getElementById('detail-date');
+    const inquireEl = document.getElementById('detail-inquire');
+    const emailEl = document.getElementById('detail-email');
+    const closeBtn = backdrop.querySelector('.detail-close');
+
+    function close() {
+      backdrop.classList.remove('is-open');
+      backdrop.setAttribute('aria-hidden', 'true');
+    }
+
+    function open(data) {
+      if (!backdrop) return;
+      titleEl.textContent = data.name || '';
+      priceEl.textContent = data.price || '';
+      descEl.textContent = data.description || '';
+      dateEl.textContent = data.date ? `Posted ${data.date}` : '';
+
+       const email = data.email || '';
+       emailEl.textContent = email;
+       if (email) {
+         const subject = encodeURIComponent('Olin Sells: Interested in buying ' + (data.name || ''));
+         inquireEl.href = `mailto:${email}?subject=${subject}`;
+         inquireEl.style.display = '';
+       } else {
+         inquireEl.removeAttribute('href');
+         inquireEl.style.display = 'none';
+       }
+
+      if (data.imageUrl) {
+        imgEl.src = data.imageUrl;
+        imgEl.alt = data.name || 'Listing image';
+      } else {
+        imgEl.removeAttribute('src');
+        imgEl.alt = '';
+      }
+
+      backdrop.classList.add('is-open');
+      backdrop.setAttribute('aria-hidden', 'false');
+    }
+
+    backdrop.addEventListener('click', (event) => {
+      if (event.target === backdrop) {
+        close();
+      }
+    });
+
+    closeBtn.addEventListener('click', close);
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        close();
+      }
+    });
+
+    return { open, close };
+  }
+
   async function fetchData() {
     const sheetId = '1mtEPmFUPAOKuYkGwr9zl8f1lAaOpt8skmTvANqJe49Y'; // Replace with your Google Sheet ID
     const apiKey = 'AIzaSyBasUwah0wqiz_OHSCiLyr5YgP1HeiShZU'; // Replace with your API key
@@ -304,6 +517,8 @@
       const container = document.getElementById('image-container');
       container.innerHTML = ''; // Clear loading message
 
+      const detail = setupDetailModal();
+
       rows.slice(1).forEach(row => {
         const productName = row[1];
         if (!productName) return; // Skip listing if the product name is blank
@@ -318,19 +533,30 @@
         const card = document.createElement('div');
         card.className = 'card';
 
+        const formattedPrice = formatPrice(price);
+        const formattedDate = formatPostedDayOnly(timestamp);
+
+        card.dataset.productName = productName || '';
+        card.dataset.description = productDescription || '';
+        card.dataset.date = formattedDate || '';
+        card.dataset.price = formattedPrice || '';
+        card.dataset.imageUrl = imageUrl || '';
+        card.dataset.email = sellerEmail || '';
+
         const cardContent = `
           <div class="card-content">
             <div class="card-header">
               <h3 class="card-title">${productName}</h3>
-              <p class="price">${formatPrice(price)}</p>
+              <p class="price">${formattedPrice}</p>
             </div>
-            <p class="description">${productDescription}</p>
             <div class="card-meta">
-              <div class="seller-name">${sellerName}</div>
-              <div>
-                <a class="meta-link" href="mailto:${sellerEmail}">${sellerEmail}</a>
+              <div class="card-meta-top">
+                <div class="seller-name">${sellerName}</div>
+                <div class="posted-date">${formattedDate}</div>
               </div>
-              <div class="posted-date">${formatPostedDayOnly(timestamp)}</div>
+              <div>
+                <a class="meta-link" href="mailto:${sellerEmail}?subject=${encodeURIComponent('Olin Sells: Interested in buying ' + productName)}">Inquire</a>
+              </div>
             </div>
           </div>
         `;
@@ -344,6 +570,19 @@
           img.className = 'card-img';
           card.prepend(img); // Add the image at the top of the card
         }
+
+        card.addEventListener('click', (event) => {
+          if (event.target.closest('.meta-link')) return;
+          if (!detail) return;
+          detail.open({
+            name: card.dataset.productName,
+            description: card.dataset.description,
+            date: card.dataset.date,
+            price: card.dataset.price,
+            imageUrl: card.dataset.imageUrl,
+            email: card.dataset.email,
+          });
+        });
 
         container.appendChild(card);
       });
