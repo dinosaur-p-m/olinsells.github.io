@@ -394,12 +394,19 @@
       const response = await fetch(url);
       const data = await response.json();
       const rows = data.values;
-      if (!rows) return;
+      if (!rows || rows.length <= 1) return;
       const container = document.getElementById('image-container');
       container.innerHTML = '';
       const detail = setupDetailModal();
 
-      rows.slice(1).forEach(row => {
+      // Sort data rows (skip header) by timestamp descending so newest appear first
+      const dataRows = rows.slice(1).sort((a, b) => {
+        const da = new Date(a[0] || 0).getTime();
+        const db = new Date(b[0] || 0).getTime();
+        return db - da;
+      });
+
+      dataRows.forEach(row => {
         const productName = row[1];
         if (!productName) return;
         const fPrice = formatPrice(row[5]);
