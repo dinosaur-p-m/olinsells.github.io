@@ -5,6 +5,7 @@
   - The project technically ended but we paid for a year of hosting (until March 2027) and we don't really have to do anything to keep it up so... I'm gonna check on it every now and then and if gets some use we will probably start updating it again. Until then you can keep using it as you were. 
 
   - Just another update (4/19/26) to let people know that we are still here maintaining this project!
+  - Update 3 on 6/1/26: We removed almost all old listings and don't really expect any use over the summer. Any listing currently shown will be avaliable at the start of the next school year. We will keep this project running for the forseeable future. Cheers!
 
 ## What?
 
